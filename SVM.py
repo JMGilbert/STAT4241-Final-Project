@@ -126,10 +126,10 @@ while True:
         print("MAD white")
         print(mean_absolute_error(y_true, y_pred))
         print("Accuracy T1 -- white")
-        print(sum((y_true - y_pred).abs() < 1)/len(y))
+        print(sum((y_true - y_pred).abs() < 1)/len(y_test))
         print("Accuracy T.5 -- white")
-        print(sum((y_true - y_pred).abs() < .50)/len(y))
+        print(sum((y_true - y_pred).abs() < .50)/len(y_test))
         print("Accuracy T.25 -- white")
-        print(sum((y_true - y_pred).abs() < .25)/len(y))
+        print(sum((y_true - y_pred).abs() < .25)/len(y_test))
         print(X_train.columns)
         break
