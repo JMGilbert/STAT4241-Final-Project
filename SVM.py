@@ -3,7 +3,7 @@ import numpy as np
 import math
 from sklearn.svm import SVR
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_squared_error
 from sklearn.metrics import confusion_matrix
 from operator import itemgetter
 
@@ -42,8 +42,8 @@ clf.set_params(gamma = 0.5)
 clf.fit(X_train,y_train)
 y_pred = clf.predict(X_test)
 
-MAD = mean_absolute_error(y_test, y_pred)
-print(MAD)
+L2 = mean_squared_error(y_test, y_pred)
+print(L2)
 
 while True:
     # First, search for optimal gamma
@@ -60,14 +60,14 @@ while True:
     X_train = X_train.drop(columns = droplist)
     X_test = X_test.drop(columns = droplist)
 
-    GS_MAD = [None] * len(gamma_search)
+    GS_L2 = [None] * len(gamma_search)
     for i in range(0,len(gamma_search)):
         clf.set_params(gamma = gamma_search[i])
         clf.fit(X_train,y_train)
         y_pred = clf.predict(X_test)
-        GS_MAD[i] = mean_absolute_error(y_test, y_pred)
+        GS_L2[i] = mean_squared_error(y_test, y_pred)
 
-    gamma = gamma_search[min(enumerate(GS_MAD), key=itemgetter(1))[0]]
+    gamma = gamma_search[min(enumerate(GS_L2), key=itemgetter(1))[0]]
     print(gamma)
     clf.set_params(gamma = gamma)
     clf.fit(X_train,y_train)
@@ -96,14 +96,14 @@ while True:
     y_true = y_test.copy()
     y_pred = clf.predict(X_test)
 
-    MAD_prev = MAD
-    MAD = mean_absolute_error(y_true, y_pred)
-    print(MAD)
-    if MAD > MAD_prev:
+    L2_prev = L2
+    L2 = mean_squared_error(y_true, y_pred)
+    print(L2)
+    if L2 > L2_prev:
         droplist.pop()
         print(droplist)
         unchanged = unchanged + 1
-        MAD = MAD_prev
+        L2 = L2_prev
     else:
         unchanged = 0
 
@@ -123,8 +123,8 @@ while True:
         clf.fit(X_train,y_train)
         y_true = y_test.copy()
         y_pred = clf.predict(X_test)
-        print("MAD white")
-        print(mean_absolute_error(y_true, y_pred))
+        print("L2 white")
+        print(mean_squared_error(y_true, y_pred))
         print("Accuracy T1 -- white")
         print(sum((y_true - y_pred).abs() < 1)/len(y_test))
         print("Accuracy T.5 -- white")
