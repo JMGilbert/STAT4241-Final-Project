@@ -12,6 +12,7 @@ import statistics
 
 # Fitting the SVM for white wine
 
+f = open("whiteres_SVM.txt", "wb")
 whitedat = pd.read_csv("./winequality-white.csv", sep = ";")
 X = whitedat[whitedat.columns[0:11]]
 y = whitedat[whitedat.columns[11]]
@@ -61,26 +62,30 @@ overall.at["Overall", "T=0.5 (%)"] = pre1
 overall.at["Overall", "T=1.0 (%)"] = pre2
 
 white_precision = white_precision.append(overall)
-print("================================")
-print("no resampling")
-print("================================")
-print(white_precision)
+f.write(b"================================\n")
+f.write(b"no resampling\n")
+f.write(b"================================\n")
+f.write(bytes(white_precision.to_string(), "utf-8"))
 
-y_pred = np.rint(y_pred)
-print(confusion_matrix(y_test,y_pred))
-
-print("================================")
-print("Oversample underrepresented classes")
-print("================================")
+y_pred = np.rint(y_pred).astype(int)
+f.write(b"\n")
+rang = range(min(min(y_pred), min(y_test)),max(max(y_pred), max(y_test)) + 1)
+CM = pd.DataFrame(confusion_matrix(y_test,y_pred), index = rang, columns = rang)
+f.write(bytes(CM.to_string(), "utf-8"))
+f.write(b"\n")
+f.write(b"================================\n")
+f.write(b"Oversample underrepresented classes\n")
+f.write(b"================================\n")
 # Oversample underrepresented classes
 
-counter = Counter(y_train)
-print(counter)
+counter = str(Counter(y_train))
+f.write(bytes(counter, "utf-8"))
+f.write(b"\n")
 sm = SMOTE(sampling_strategy="not majority",random_state=24,k_neighbors=2)
 Augmented_X_white,Augmented_Y_white=sm.fit_resample(X_train, y_train)
-counter = Counter(Augmented_Y_white)
-print(counter)
-
+counter = str(Counter(Augmented_Y_white))
+f.write(bytes(counter, "utf-8"))
+f.write(b"\n")
 clf.fit(Augmented_X_white, Augmented_Y_white)
 y_pred = clf.predict(X_test)
 
@@ -102,24 +107,29 @@ overall.at["Overall", "T=1.0 (%)"] = pre2
 
 white_precision = white_precision.append(overall)
 
-print(white_precision)
+f.write(bytes(white_precision.to_string(), "utf-8"))
 
 
-y_pred = np.rint(y_pred)
-
-print(confusion_matrix(y_test,y_pred))
-print("================================")
-print("Median sampling")
-print("================================")
+y_pred = np.rint(y_pred).astype(int)
+f.write(b"\n")
+rang = range(min(min(y_pred), min(y_test)),max(max(y_pred), max(y_test)) + 1)
+CM = pd.DataFrame(confusion_matrix(y_test,y_pred), index = rang, columns = rang)
+f.write(bytes(CM.to_string(), "utf-8"))
+f.write(b"\n")
+f.write(b"================================\n")
+f.write(b"Median sampling\n")
+f.write(b"================================\n")
 # Median sampling
 
-counter = Counter(y_train)
-print(counter)
-median=int(statistics.median(counter.values()))
-sm = SMOTE(sampling_strategy={3:median,9:median},random_state=24,k_neighbors=2)
+counter = str(Counter(y_train))
+f.write(bytes(counter, "utf-8"))
+f.write(b"\n")
+median=int(statistics.median(Counter(y_train).values()))
+sm = SMOTE(sampling_strategy={min(y_test):median,max(y_test):median},random_state=24,k_neighbors=2)
 Augmented_X_white,Augmented_Y_white=sm.fit_resample(X_train, y_train)
-counter = Counter(Augmented_Y_white)
-print(counter)
+counter = str(Counter(Augmented_Y_white))
+f.write(bytes(counter, "utf-8"))
+f.write(b"\n")
 
 clf.fit(Augmented_X_white, Augmented_Y_white)
 y_pred = clf.predict(X_test)
@@ -139,23 +149,27 @@ overall.at["Overall", "T=0.5 (%)"] = pre1
 overall.at["Overall", "T=1.0 (%)"] = pre2
 
 white_precision = white_precision.append(overall)
-print(white_precision)
+f.write(bytes(white_precision.to_string(), "utf-8"))
 
 
-y_pred = np.rint(y_pred)
-
-print(confusion_matrix(y_test,y_pred))
-print("================================")
-print("All but majority")
-print("================================")
+y_pred = np.rint(y_pred).astype(int)
+f.write(b"\n")
+rang = range(min(min(y_pred), min(y_test)),max(max(y_pred), max(y_test)) + 1)
+CM = pd.DataFrame(confusion_matrix(y_test,y_pred), index = rang, columns = rang)
+f.write(bytes(CM.to_string(), "utf-8"))
+f.write(b"\n")
+f.write(b"================================\n")
+f.write(b"All but majority\n")
+f.write(b"================================\n")
 # All but majority
 
-counter = Counter(y_train)
-print(counter)
+counter = str(Counter(y_train))
+f.write(bytes(counter, "utf-8"))
 sm = SMOTE(sampling_strategy="not majority",random_state=24,k_neighbors=2)
 Augmented_X_white,Augmented_Y_white=sm.fit_resample(X_train, y_train)
-counter = Counter(Augmented_Y_white)
-print(counter)
+counter = str(Counter(Augmented_Y_white))
+f.write(bytes(counter, "utf-8"))
+f.write(b"\n")
 
 clf.fit(Augmented_X_white, Augmented_Y_white)
 y_pred = clf.predict(X_test)
@@ -175,9 +189,13 @@ overall.at["Overall", "T=0.5 (%)"] = pre1
 overall.at["Overall", "T=1.0 (%)"] = pre2
 
 white_precision = white_precision.append(overall)
-print(white_precision)
+f.write(bytes(white_precision.to_string(), "utf-8"))
 
 
-y_pred = np.rint(y_pred)
+y_pred = np.rint(y_pred).astype(int)
+f.write(b"\n")
+rang = range(min(min(y_pred), min(y_test)),max(max(y_pred), max(y_test)) + 1)
+CM = pd.DataFrame(confusion_matrix(y_test,y_pred), index = rang, columns = rang)
+f.write(bytes(CM.to_string(), "utf-8"))
 
-print(confusion_matrix(y_test,y_pred))
+f.close()
