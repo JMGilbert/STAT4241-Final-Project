@@ -9,7 +9,7 @@ from operator import itemgetter
 
 # Fitting the SVM for white wine
 
-whitedat = pd.read_csv("./winequality-white.csv", sep = ";")
+whitedat = pd.read_csv("./winequality-red.csv", sep = ";")
 X = whitedat[whitedat.columns[0:11]]
 y = whitedat[whitedat.columns[11]]
 
