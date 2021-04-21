@@ -6,6 +6,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import train_test_split
 from imblearn.over_sampling import SMOTE
 from collections import Counter
 import statistics
@@ -14,34 +15,25 @@ import statistics
 
 f = open("whiteres_SVM.txt", "wb")
 whitedat = pd.read_csv("./winequality-white.csv", sep = ";")
-X = whitedat[whitedat.columns[0:11]]
-y = whitedat[whitedat.columns[11]]
+X_white = whitedat[whitedat.columns[0:11]]
+y_white = whitedat[whitedat.columns[11]]
 
 white_class=pd.unique(whitedat['quality'])
 white_class.sort()
 
 
 clfknn = KNeighborsClassifier(n_neighbors=3)
-clfknn.fit(X,y)
+clfknn.fit(X_white,y_white)
 
-y_pred = clfknn.predict(X)
+y_pred = clfknn.predict(X_white)
 
-sigma2 = (y - y_pred).var() * 1.5
-epsilon = sigma2/math.sqrt(len(y))
+sigma2 = (y_white - y_pred).var() * 1.5
+epsilon = sigma2/math.sqrt(len(y_white))
 
 clf = SVR(kernel = 'rbf', epsilon = epsilon, C = 3, gamma=2**-2)
 
 wdcopy = whitedat.copy()
-train_set = wdcopy.sample(frac = 0.67, random_state = 0)
-test_set = wdcopy.drop(train_set.index)
-X_train = train_set[train_set.columns[0:11]]
-y_train = train_set[train_set.columns[11]]
-
-X_test = test_set[test_set.columns[0:11]]
-y_test = test_set[test_set.columns[11]]
-
-X_train = X_train.drop(columns = ['density'])
-X_test = X_test.drop(columns = ['density'])
+X_train, X_test, y_train, y_test = train_test_split(X_white, y_white, test_size=0.33, random_state=42,stratify=y_white)
 
 clf.fit(X_train, y_train)
 y_pred = clf.predict(X_test)
@@ -163,6 +155,7 @@ f.write(b"================================\n")
 
 counter = str(Counter(y_train))
 f.write(bytes(counter, "utf-8"))
+f.write(b"\n")
 sm = SMOTE(sampling_strategy="not majority",random_state=24,k_neighbors=2)
 Augmented_X_white,Augmented_Y_white=sm.fit_resample(X_train, y_train)
 counter = str(Counter(Augmented_Y_white))
